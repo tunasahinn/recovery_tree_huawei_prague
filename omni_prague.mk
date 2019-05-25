@@ -30,10 +30,9 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 # Device
 $(call inherit-product, device/huawei/prague/full_prague.mk)
 
-PRODUCT_NAME := lineage_prague
+PRODUCT_NAME := omni_prague
 PRODUCT_DEVICE := prague
 PRODUCT_BRAND := Huawei
 PRODUCT_MODEL := Huawei P8 Lite 2017
 
-# LineageOS
-$(call inherit-product, vendor/lineage/config/common_full_phone.mk)
+
