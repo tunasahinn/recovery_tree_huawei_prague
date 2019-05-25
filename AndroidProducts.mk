@@ -15,4 +15,4 @@
 #
 
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/recovery_pra.mk
+    $(LOCAL_DIR)/omni_prague.mk
