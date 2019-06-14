@@ -1,5 +1,5 @@
 #
-# Copyright 2019 The Android Open Source Project
+# Copyright 2012 The Android Open Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,25 +14,33 @@
 # limitations under the License.
 #
 
-# This contains the module build definitions for the hardware-specific
-# components for this device.
-#
-# As much as possible, those components should be built unconditionally,
-# with device-specific names to avoid collisions, to avoid device-specific
-# bitrot and build breakages. Building a component unconditionally does
-# *not* include it on all devices, so it is safe even with hardware-specific
-# components.
+# Sample: This is where we'd set a backup provider if we had one
+# $(call inherit-product, device/sample/products/backup_overlay.mk)
 
-# Android Open Source Project Common Stuff
+# Get the prebuilt list of APNs
+$(call inherit-product, vendor/omni/config/gsm.mk)
+
+# Inherit from the common Open Source product configuration
+$(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_base_telephony.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
-$(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
 
-# Device
-$(call inherit-product, device/huawei/prague/full_prague.mk)
+# Inherit from our custom product configuration
+$(call inherit-product, vendor/omni/config/common.mk)
+
+PRODUCT_PACKAGES += \
+    charger_res_images \
+    charger
+
+PRODUCT_COPY_FILES += \
+    device/huawei/prague/dummykernel:kernel
 
 PRODUCT_NAME := omni_prague
 PRODUCT_DEVICE := prague
 PRODUCT_BRAND := Huawei
-PRODUCT_MODEL := Huawei P8 Lite 2017
+PRODUCT_MODEL := P8 lite 2017
+PRODUCT_MANUFACTURER := Huawei
 
-
+# Kernel inline build
+#TARGET_KERNEL_CONFIG := prague_defconfig
+#TARGET_VARIANT_CONFIG := prague_defconfig
+#TARGET_SELINUX_CONFIG := prague_defconfig
