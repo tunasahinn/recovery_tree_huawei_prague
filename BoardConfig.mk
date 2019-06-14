@@ -1,5 +1,5 @@
 #
-# Copyright 2019 The Android Open Source Project
+# Copyright (C) 2019 yey59 | forumandroid.com
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,100 +14,73 @@
 # limitations under the License.
 #
 
-# This contains the module build definitions for the hardware-specific
-# components for this device.
-#
-# As much as possible, those components should be built unconditionally,
-# with device-specific names to avoid collisions, to avoid device-specific
-# bitrot and build breakages. Building a component unconditionally does
-# *not* include it on all devices, so it is safe even with hardware-specific
-# components.
-
-include build/make/target/board/generic_arm64_a/BoardConfig.mk
-
 DEVICE_PATH := device/huawei/prague
 
-# Architecture
-TARGET_ARCH := arm64
-TARGET_ARCH_VARIANT := armv8-a
-TARGET_CPU_ABI := arm64-v8a
-TARGET_CPU_VARIANT := generic
-
-TARGET_2ND_ARCH := arm
-TARGET_2ND_ARCH_VARIANT := armv7-a-neon
-TARGET_2ND_CPU_ABI := armeabi-v7a
-TARGET_2ND_CPU_ABI2 := armeabi
-TARGET_2ND_CPU_VARIANT := cortex-a15
-
+# Platform
+TARGET_BOARD_PLATFORM := hi6250
 
 # Bootloader
 TARGET_BOOTLOADER_BOARD_NAME := hisi
 TARGET_NO_BOOTLOADER := true
 
-# File System
-TARGET_EXFAT_DRIVER := exfat
-TARGET_USERIMAGES_USE_EXT4 := true
-TARGET_USERIMAGES_USE_F2FS := true
-TARGET_USERIMAGES_SPARSE_EXT_DISABLED := false
+# Architecture
+TARGET_ARCH := arm64
+TARGET_ARCH_VARIANT := armv8-a
+TARGET_CPU_ABI := arm64-v8a
+TARGET_CPU_ABI2 :=
+TARGET_CPU_VARIANT := generic
+TARGET_CPU_SMP := true
 
+TARGET_2ND_ARCH := arm
+TARGET_2ND_ARCH_VARIANT := armv7-a-neon
+TARGET_2ND_CPU_ABI := armeabi-v7a
+TARGET_2ND_CPU_ABI2 := armeabi
+TARGET_2ND_CPU_VARIANT := generic
 
-# Kernel
-BOARD_KERNEL_IMAGE_NAME := Image
-TARGET_NO_KERNEL := false
-TARGET_PREBUILT_KERNEL := /dev/null
+BOARD_KERNEL_CMDLINE := loglevel=4 coherent_pool=512K page_tracker=on slub_min_objects=12 androidboot.selinux=permissive
 
+BOARD_KERNEL_BASE := 0x10000000
+BOARD_KERNEL_PAGESIZE := 2048
+BOARD_MKBOOTIMG_ARGS := kernel_offset 0x00008000 --ramdisk_offset 0x07b88000 --tags_offset 0x07588000
 
-# Partitions
-BOARD_AVB_ENABLE := false
-BOARD_SYSTEMIMAGE_PARTITION_SIZE := 2147483648
-BOARD_CACHEIMAGE_PARTITION_SIZE := 16777216
-BOARD_RECOVERYIMAGE_PARTITION_SIZE := 32768
-BOARD_USES_METADATA_PARTITION := true
+# phony empty kernel to satisfy build system, but this device does not
+# include a kernel in the recovery image -- flash to recovery_ramdisk
+TARGET_PREBUILT_KERNEL := device/huawei/prague/dummykernel
+# else uncomment below to build from sauce
+# TARGET_KERNEL_SOURCE := kernel/huawei/prague
+# TARGET_KERNEL_CONFIG := prague_defconfig
 
+BOARD_BOOTIMAGE_PARTITION_SIZE := 25165824
+BOARD_RECOVERYIMAGE_PARTITION_SIZE := 33554432
+BOARD_SYSTEMIMAGE_PARTITION_SIZE := 3154116608
+BOARD_USERDATAIMAGE_PARTITION_SIZE := 10148118528
+BOARD_VENDORIMAGE_PARTITION_SIZE := 822083584
+BOARD_FLASH_BLOCK_SIZE := 131072 # (BOARD_KERNEL_PAGESIZE * 64)
+BOARD_VOLD_EMMC_SHARES_DEV_MAJOR := true
+BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
 TARGET_COPY_OUT_VENDOR := vendor
 
-# Properties
-BOARD_PROPERTY_OVERRIDES_SPLIT_ENABLED := true
-TARGET_SYSTEM_PROP := $(DEVICE_PATH)/system.prop
-
-# Recovery
-TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/rootdir/etc/fstab.hi6250
-
-# Release Tools
-TARGET_RELEASETOOLS_EXTENSIONS := $(DEVICE_PATH)/releasetools
-
-
-# SELinux
-BOARD_PLAT_PRIVATE_SEPOLICY_DIR += $(DEVICE_PATH)/sepolicy/private
-BOARD_PLAT_PUBLIC_SEPOLICY_DIR += $(DEVICE_PATH)/sepolicy/public
-
-
-# TWRP features
-TW_THEME := portrait_hdpi
-TW_EXCLUDE_SUPERSU := true
 TARGET_USERIMAGES_USE_EXT4 := true
 TARGET_USERIMAGES_USE_F2FS := true
-TARGET_USES_MKE2FS := true
-TW_INCLUDE_NTFS_3G := true
-
 BOARD_HAS_NO_SELECT_BUTTON := true
 
+TW_THEME := portrait_hdpi
 BOARD_SUPPRESS_SECURE_ERASE := true
 RECOVERY_SDCARD_ON_DATA := true
-BOARD_HAS_NO_REAL_SDCARD := true
 TW_EXCLUDE_DEFAULT_USB_INIT := true
-
+TW_EXCLUDE_SUPERSU := true
 TW_BRIGHTNESS_PATH := /sys/class/leds/lcd_backlight0/brightness
+TW_NO_HAPTICS := true
 TW_NO_SCREEN_BLANK := true
-TW_DEFAULT_BRIGHTNESS := "1024"
+TW_USE_TOOLBOX := true
+TW_DEFAULT_BRIGHTNESS := "2048"
+TW_EXTRA_LANGUAGES := true
 TW_CUSTOM_BATTERY_PATH := /sys/class/power_supply/Battery
+# Device crashes if /sbin/modprobe is present so this is needed:
+BOARD_CUSTOM_BOOTIMG_MK := device/huawei/prague/custombootimg.mk
+# MTP will not work until we update it to support ffs
+TW_EXCLUDE_MTP := true
 
-# Decryption 
+# Decryption  
 # TW_INCLUDE_CRYPTO := true
 # TW_INCLUDE_CRYPTO_FBE := true
-
-# Debug
-TWRP_INCLUDE_LOGCAT := true
-TARGET_USES_LOGD := true
-
-BOARD_CUSTOM_BOOTIMG_MK := device/huawei/prague/custombootimg.mk
